@@ -1,11 +1,11 @@
 window.addEventListener('DOMContentLoaded', () => {
-    
+
     //Tabs
 
     const tabs = document.querySelectorAll('.tabheader__item'),
         tabsContent = document.querySelectorAll('.tabcontent'),
         tabsParent = document.querySelector('.tabheader__items');
-    
+
     function hideTabContent() {
         tabsContent.forEach(item => {
             item.classList.add('hide');
@@ -26,11 +26,11 @@ window.addEventListener('DOMContentLoaded', () => {
     hideTabContent();
     showTabContent();
 
-    tabsParent.addEventListener('click', (event) => { 
+    tabsParent.addEventListener('click', (event) => {
         const target = event.target;
 
         if (target && target.classList.contains('tabheader__item')) {
-            tabs.forEach((item, i) => { 
+            tabs.forEach((item, i) => {
                 if (target == item) {
                     hideTabContent();
                     showTabContent(i);
@@ -43,19 +43,19 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const deadline = '2021-02-24';
 
-    function getTimeRemaining(endtime) { 
+    function getTimeRemaining(endtime) {
         const t = Date.parse(endtime) - Date.parse(new Date()),
-              days = Math.floor(t / (1000 * 60 * 60 * 24)),
-              hours = Math.floor((t / (1000 * 60 * 60) % 24)),
-              minutes = Math.floor((t / 1000 / 60) % 60),
-              seconds = Math.floor((t / 1000) % 60);
+            days = Math.floor(t / (1000 * 60 * 60 * 24)),
+            hours = Math.floor((t / (1000 * 60 * 60) % 24)),
+            minutes = Math.floor((t / 1000 / 60) % 60),
+            seconds = Math.floor((t / 1000) % 60);
         return {
             'total': t,
             'days': days,
             'hours': hours,
             'minutes': minutes,
             'seconds': seconds
-        };     
+        };
     }
 
     function getZero(num) {
@@ -68,14 +68,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
     function setClock(selector, endtime) {
         const timer = document.querySelector(selector),
-              days = timer.querySelector('#days'),
-              hours = timer.querySelector('#hours'),
-              minutes = timer.querySelector('#minutes'),
-              seconds = timer.querySelector('#seconds'),
-              timeInterval = setInterval(updateClock, 1000);
-        
+            days = timer.querySelector('#days'),
+            hours = timer.querySelector('#hours'),
+            minutes = timer.querySelector('#minutes'),
+            seconds = timer.querySelector('#seconds'),
+            timeInterval = setInterval(updateClock, 1000);
+
         updateClock();
-        
+
         function updateClock() {
             const t = getTimeRemaining(endtime);
 
@@ -95,30 +95,28 @@ window.addEventListener('DOMContentLoaded', () => {
     //Modal
 
     const modalTrigger = document.querySelectorAll('[data-modal]'),
-          modal = document.querySelector('.modal'),
-          modalCloseBtn = document.querySelector('[data-close]');
-    
+        modal = document.querySelector('.modal');
+
     modalTrigger.forEach(btn => {
         btn.addEventListener('click', openModal);
     });
-        
+
     function openModal() {
-            modal.classList.add('show');
-            modal.classList.remove('hide');
-            document.body.style.overflow = 'hidden';
+        modal.classList.add('show');
+        modal.classList.remove('hide');
+        document.body.style.overflow = 'hidden';
         clearInterval(modalTimerId);
     }
 
     function closeModal() {
-            modal.classList.add('hide');
-            modal.classList.remove('show');
-            document.body.style.overflow = '';
+        modal.classList.add('hide');
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
     }
-    
-    modalCloseBtn.addEventListener('click', closeModal);
 
-    modal.addEventListener('click', (e) => { 
-        if (e.target === modal) {
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal || e.target.getAttribute('data-close') == '') {
             closeModal();
         }
     });
@@ -129,7 +127,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // const modalTimerId = setTimeout(openModal, 5000);
+    const modalTimerId = setTimeout(openModal, 50000);
 
     function showModalByScroll() {
         if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
@@ -167,7 +165,7 @@ window.addEventListener('DOMContentLoaded', () => {
             } else {
                 this.classes.forEach(className => element.classList.add(className));
             }
-            
+
             element.innerHTML = `
                
                 <img src=${this.src} alt=${this.alt}>
@@ -183,7 +181,7 @@ window.addEventListener('DOMContentLoaded', () => {
             this.parent.append(element);
         }
     }
-    
+
     new MenuCard(
         "img/tabs/vegy.jpg",
         "vegy",
@@ -204,13 +202,112 @@ window.addEventListener('DOMContentLoaded', () => {
         'menu__item'
     ).render();
 
-        new MenuCard(
+    new MenuCard(
         "img/tabs/post.jpg",
         "post",
         'Меню "Постное"',
         'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
         10,
-            '.menu .container',
+        '.menu .container',
         'menu__item'
     ).render();
+
+    //Forms
+
+    const forms = document.querySelectorAll('form');
+
+    const message = {
+        loading: 'img/form/spinner.svg',
+        success: 'Дякую! Незабаром ми звяжемось з Вами',
+        failure: 'Щось пішло не так...'
+    };
+
+    forms.forEach(item => {
+        postData(item);
+    });
+
+    function postData(form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const statusMessage = document.createElement('img');
+            statusMessage.src = message.loading;
+            statusMessage.style.cssText = `
+                display: block;
+                margin: 0 auto;
+            `;
+            form.insertAdjacentElement('afterend', statusMessage);
+
+            // const request = new XMLHttpRequest();
+            // request.open('POST', 'server.php');
+
+
+            const formData = new FormData(form);
+
+            const object = {};
+            formData.forEach(function (value, key) {
+                object[key] = value;
+            });
+
+            
+            fetch('server.php', {
+                method: "POST",
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(object)
+            })
+            .then(data => data.text())
+            .then(data => {
+                console.log(data);
+                showThanksModal(message.success);
+                form.reset();
+                statusMessage.remove();
+            }).catch(() => {
+                showThanksModal(message.failure);
+            }).finally(() => {
+                form.reset();
+            });
+
+            // request.addEventListener('load', () => {
+            //     if (request.status === 200) {
+            //         console.log(request.response);
+            //         showThanksModal(message.success);
+            //         form.reset();
+            //         statusMessage.remove();
+            //     } else {
+            //         showThanksModal(message.failure);
+            //     }
+            // });
+        });
+    }
+
+    function showThanksModal(message) {
+        const prevModalDialog = document.querySelector('.modal__dialog');
+
+        prevModalDialog.classList.add('hide');
+        openModal();
+
+        const thanksModal = document.createElement('div');
+        thanksModal.classList.add('modal__dialog');
+        thanksModal.innerHTML = `
+            <div class="modal__content">
+                <div class="modal__close" data-close>×</div>
+                <div class="modal__titel">${message}</div>
+            </div>
+        `;
+
+        document.querySelector('.modal').append(thanksModal);
+        setTimeout(() => {
+            thanksModal.remove();
+            prevModalDialog.classList.add('show');
+            prevModalDialog.classList.remove('hide');
+            closeModal();
+        }, 4000);
+    }
+
+    fetch('http://localhost:3000/menu')
+        .then(data => data.json())
+        .then(res => console.log(res));
+
 });
